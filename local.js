@@ -27,15 +27,19 @@ passport.use(new LocalStrategy ({
       if (user) {
         user.confirmAuth(password, (err, valid) => {
           if (err) throw err;
-
+          console.log(valid);
           if (valid) {
+            console.log(`in successful login`);
             done(null, user, { message: SUCCESSFUL_LOGIN_MSG });
           } else {
+            console.log(`in UNsuccessful login`);
+            console.log(`running passport middleware, Incorrect password`);
             done(null, null, { message: INCORRECT_PASSWORD_MSG });
           }
         });
 
       } else {
+        console.log(`in final Unsuccessful login`);
         done(null, null, { message: INCORRECT_USERNAME_MSG });
       }
     });

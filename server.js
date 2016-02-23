@@ -27,24 +27,9 @@ app.set("view engine", 'jade');
 // ---------------  middleware
 // body parser config
 app.use(bodyParser.urlencoded({extended: false}));
-
-// passport config
-// passport.use(new LocalStrategy(function(email,password,done)
-// {
-//   UserModel.findOne({"email": email}, function(err, singleUser)
-//   {
-//    if (err) { return done(err); }
-//
-//    if (!singleUser) {
-//      return done(null, false, { message: 'Incorrect username.' });
-//    }
-//    if (!singleUser.validPassword(password)) {
-//      return done(null, false, { message: 'Incorrect password.' });
-//    }
-//     return done(null, singleUser);
-//
-//   });
-// }));
+//initialize passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 // --------------- routes
 app.get('/', (req, res) =>
@@ -60,8 +45,8 @@ app.get('/loggedin', (req, res) =>
 // handle user login
 app.post('/login',
   passport.authenticate('local',
-  { successRedirect: '/',
-    failureRedirect: '/loggedin'
+  { successRedirect: '/loggedin',
+    failureRedirect: '/login'
   }));
 
 // handle user registration
