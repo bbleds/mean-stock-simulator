@@ -6,6 +6,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
+// models
+const UserModel = require('./models/user');
+
 // envrionent variables
 const PORT = process.env.PORT || 3000;
 const MONGODB_URL = 'mongodb://localhost:27017/stockSimulator';
@@ -28,16 +31,17 @@ app.get('/', (req, res) =>
 // handle user login
 app.post('/login', (req, res) =>
 {
-  console.log(req.body);
-  res.send("Should now log in user");
+  const user = UserModel.findOne({"email":req.body.email}, (err, singleUser) =>
+  {
+    console.log(singleUser);
+    req.body.password === singleUser.password ? res.send("congrats you match") : res.send("ooooo sorry, thats wrong");
+
+  });
 });
 
 // handle user registration
-// get model
-const UserModel = require('./models/user');
 app.post('/register', (req, res) =>
 {
-  console.log(req.body);
   const user = new UserModel({
     email: req.body.email,
     password: req.body.password
