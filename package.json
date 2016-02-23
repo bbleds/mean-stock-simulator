@@ -1,0 +1,27 @@
+{
+  "name": "mean-stock-simulator",
+  "version": "1.0.0",
+  "description": "An investing simulator application built on Node.js, Express, AngularJs, and MongoDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev" : "nodemon --harmony_destructuring server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bbleds/mean-stock-simulator.git"
+  },
+  "author": "Benjamin Bledsoe <bledsoedesigns@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bbleds/mean-stock-simulator/issues"
+  },
+  "homepage": "https://github.com/bbleds/mean-stock-simulator#readme",
+  "dependencies": {
+    "express": "^4.13.4",
+    "mongoose": "^4.4.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.9.0"
+  }
+}
