@@ -5,9 +5,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 
 // models
 const UserModel = require('./models/user');
+
+// passport
+require('./local');
 
 // envrionent variables
 const PORT = process.env.PORT || 3000;
@@ -20,7 +25,26 @@ const app = express();
 app.set("view engine", 'jade');
 
 // ---------------  middleware
+// body parser config
 app.use(bodyParser.urlencoded({extended: false}));
+
+// passport config
+// passport.use(new LocalStrategy(function(email,password,done)
+// {
+//   UserModel.findOne({"email": email}, function(err, singleUser)
+//   {
+//    if (err) { return done(err); }
+//
+//    if (!singleUser) {
+//      return done(null, false, { message: 'Incorrect username.' });
+//    }
+//    if (!singleUser.validPassword(password)) {
+//      return done(null, false, { message: 'Incorrect password.' });
+//    }
+//     return done(null, singleUser);
+//
+//   });
+// }));
 
 // --------------- routes
 app.get('/', (req, res) =>
@@ -28,16 +52,17 @@ app.get('/', (req, res) =>
   res.render('index');
 });
 
-// handle user login
-app.post('/login', (req, res) =>
+app.get('/loggedin', (req, res) =>
 {
-  const user = UserModel.findOne({"email":req.body.email}, (err, singleUser) =>
-  {
-    console.log(singleUser);
-    req.body.password === singleUser.password ? res.send("congrats you match") : res.send("ooooo sorry, thats wrong");
-
-  });
+  res.render('loggedin');
 });
+
+// handle user login
+app.post('/login',
+  passport.authenticate('local',
+  { successRedirect: '/',
+    failureRedirect: '/loggedin'
+  }));
 
 // handle user registration
 app.post('/register', (req, res) =>
