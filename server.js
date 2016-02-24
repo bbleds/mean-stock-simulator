@@ -14,8 +14,8 @@ const User = require('./models/user');
 // models
 const UserModel = require('./models/user');
 
-// passport
-require('./local');
+// routes
+const mainRoutes = require("./routes/cumulative");
 
 // envrionent variables
 const PORT = process.env.PORT || 3000;
@@ -39,6 +39,7 @@ app.use(session({
   secret: SESSION_SECRET,
   store: new RedisStore()
 }));
+
 // manual middleware
   //check if user is logged in, and if so, set up local variables unique to user then load content
 app.use((req, res, next) => {
@@ -64,61 +65,7 @@ app.use((req, res, next) => {
 });
 
 // --------------- routes
-app.get('/', (req, res) =>
-{
-  // if user logged in, redirect to logged in page, else render index
-  if(res.locals.userId){
-      res.redirect('/loggedin');
-  } else {
-    res.render('index');
-  }
-});
-
-app.get('/somedata', (req, res) =>
-{
-  // if user logged in, redirect to logged in page, else render index
-  if(req.session.passport){
-      res.send("Data can now be sent, user is good");
-  } else {
-      res.status(403).send("Access denied");
-  }
-});
-
-app.get('/loggedin', (req, res) =>
-{
-  // if user logged in render logged in page, else redirect to main page
-  if(res.locals.userId){
-      res.render('loggedin');
-  } else {
-    res.render('index');
-  }
-});
-
-// handle user login
-app.post('/login',
-  passport.authenticate('local',
-  { successRedirect: '/loggedin',
-    failureRedirect: '/'
-  }));
-
-// handle user registration
-app.post('/register', (req, res) =>
-{
-  const user = new UserModel({
-    email: req.body.email,
-    password: req.body.password,
-    username: req.body.username
-  });
-
-  user.save((err, userObject) =>
-  {
-    if (err) return err;
-      res.redirect("/");
-  });
-
-});
-
-
+app.use(mainRoutes);
 //-----------------  connect to mongo and spin up app
 mongoose.connect(MONGODB_URL, (err) =>
 {
