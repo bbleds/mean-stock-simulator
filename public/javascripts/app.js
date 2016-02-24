@@ -25,5 +25,9 @@ app.config(($stateProvider, $urlRouterProvider, $locationProvider) => {
 
 app.controller("mainCtrl", ["$http", "userData", function($http, $userData)
 {
-	$userData.getUserData();
+	var self = this;
+	$userData.getUserData((data) =>
+	{
+		self.userData = data;
+	});
 }]);
