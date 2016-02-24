@@ -10,12 +10,15 @@ const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const User = require('./models/user');
+const path = require("path");
+const sassMiddleware = require("node-sass-middleware");
 
 // models
 const UserModel = require('./models/user');
 
 // routes
 const mainRoutes = require("./routes/cumulative");
+const apiRoutes = require("./routes/api");
 
 // envrionent variables
 const PORT = process.env.PORT || 3000;
@@ -34,11 +37,25 @@ app.use(bodyParser.urlencoded({extended: false}));
 // passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
-//configure session with redi
+//configure session with redis
 app.use(session({
   secret: SESSION_SECRET,
   store: new RedisStore()
 }));
+
+//use sass compiler via express
+app.use(sassMiddleware({
+    /* Options */
+    src: path.join(__dirname, 'public'),
+    dest: path.join(__dirname, 'public'),
+    //this is whitespace indent rather than curly braces
+    indentedSyntax: true,
+    debug: true,
+    outputStyle: 'compressed'
+}));
+
+//use public directory for static files
+app.use(express.static(path.join(__dirname, '/public')));
 
 // manual middleware
   //check if user is logged in, and if so, set up local variables unique to user then load content
@@ -66,6 +83,7 @@ app.use((req, res, next) => {
 
 // --------------- routes
 app.use(mainRoutes);
+app.use(apiRoutes);
 //-----------------  connect to mongo and spin up app
 mongoose.connect(MONGODB_URL, (err) =>
 {

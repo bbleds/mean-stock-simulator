@@ -1,1 +1,12 @@
-h1 haaaaaaaaaayyyy, welcome user #{userId}
+extends ./header.jade
+
+block content
+  <div ui-view></div>
+  //-Bootstrap js and required jquery
+  script(src="/www/lib/jquery/dist/jquery.min.js")
+  script(src="/www/lib/bootstrap/dist/js/bootstrap.min.js")
+  //- angular links
+  script(src="/www/lib/angular/angular.min.js")
+  script(src="/www/lib/angular-ui-router/release/angular-ui-router.min.js")
+  script(src="/javascripts/app.js")
+  script(src="/javascripts/services/userData.js")

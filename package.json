@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --harmony_destructuring server.js"
+    "dev": "nodemon --harmony_destructuring server.js",
+    "bower": "bower"
   },
   "repository": {
     "type": "git",
@@ -20,13 +21,16 @@
   "dependencies": {
     "bcrypt": "^0.8.5",
     "body-parser": "^1.15.0",
+    "bower": "^1.7.7",
     "connect-redis": "^3.0.2",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "jade": "^1.11.0",
     "mongoose": "^4.4.4",
+    "node-sass-middleware": "^0.9.7",
     "passport": "^0.3.2",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "nodemon": "^1.9.0"

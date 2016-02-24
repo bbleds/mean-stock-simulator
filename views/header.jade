@@ -1,0 +1,19 @@
+doctype html
+html(lang="en")
+	head
+		title= title
+		link(href="/www/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet")
+		link(href="/stylesheets/main.css" rel="stylesheet")
+	body(ng-app="stockApp")
+		nav.navbar.navbar-default
+			.container-fluid
+				.navbar-header
+					button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1', aria-expanded='false')
+						span.sr-only Toggle navigation
+						span.icon-bar
+						span.icon-bar
+						span.icon-bar
+
+
+
+		block content
