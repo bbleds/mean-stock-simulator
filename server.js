@@ -9,6 +9,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
+const User = require('./models/user');
 
 // models
 const UserModel = require('./models/user');
@@ -39,13 +40,17 @@ app.use(session({
   store: new RedisStore()
 }));
 // manual middleware
-  //check if user is logged in, and if so, load content
+  //check if user is logged in, and if so, set up local variables unique to user then load content
 app.use((req, res, next) => {
   console.log("req is  ");
   console.log(req.session.passport);
   if(req.session.passport){
     console.log("Yas passport is here");
     res.locals.userId = req.session.passport.user;
+      // if no res.locals.username, set it
+      // SET IT SESSION AND NOT LOCALS?
+      console.log("req.session is ");
+      console.log(req.session);
     console.log(res.locals);
   } else {
     console.log("passport not here");
@@ -61,19 +66,39 @@ app.use((req, res, next) => {
 // --------------- routes
 app.get('/', (req, res) =>
 {
-  res.render('index');
+  // if user logged in, redirect to logged in page, else render index
+  if(res.locals.userId){
+      res.redirect('/loggedin');
+  } else {
+    res.render('index');
+  }
+});
+
+app.get('/somedata', (req, res) =>
+{
+  // if user logged in, redirect to logged in page, else render index
+  if(req.session.passport){
+      res.send("Data can now be sent, user is good");
+  } else {
+      res.status(403).send("Access denied");
+  }
 });
 
 app.get('/loggedin', (req, res) =>
 {
-  res.render('loggedin');
+  // if user logged in render logged in page, else redirect to main page
+  if(res.locals.userId){
+      res.render('loggedin');
+  } else {
+    res.render('index');
+  }
 });
 
 // handle user login
 app.post('/login',
   passport.authenticate('local',
   { successRedirect: '/loggedin',
-    failureRedirect: '/login'
+    failureRedirect: '/'
   }));
 
 // handle user registration
@@ -81,13 +106,14 @@ app.post('/register', (req, res) =>
 {
   const user = new UserModel({
     email: req.body.email,
-    password: req.body.password
+    password: req.body.password,
+    username: req.body.username
   });
 
   user.save((err, userObject) =>
   {
     if (err) return err;
-      res.send("Should now log in user");
+      res.redirect("/");
   });
 
 });

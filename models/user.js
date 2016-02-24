@@ -7,7 +7,8 @@ const BCRYPT_DIFFICULTY = 10;
 
 const UserSchema = mongoose.Schema({
 	email: String,
-  password: String
+  password: String,
+	username: String
 });
 
 UserSchema.methods.confirmAuth = function (password, cb) {
