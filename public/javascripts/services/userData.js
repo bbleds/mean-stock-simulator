@@ -12,12 +12,9 @@ app.factory("userData", ["$http", ($http) =>
     {
       console.log("received data");
       console.log(data);
-			factoryExports.userData = data;
 			cb(data);
     });
   };
-
-	factoryExports.userData = "";
 
 
 	return factoryExports;
