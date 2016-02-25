@@ -1,5 +1,5 @@
 "use strict";
-app.controller("portfolioCtrl", ["$http", "buyStocksFactory", function($http, $buyStocksFactory)
+app.controller("portfolioCtrl", ["$http", function($http)
 {
 	const self = this;
 
