@@ -45,24 +45,28 @@ exportsObject.getAllStock = (req, res) =>
 	stockItem.find({}, (err, stock)=>
 	{
 		if (err) throw err;
+		const hasBeenRefreshed = false;
+
 		// time on stocks converted to minutes
 		const timeOnStocks = Math.floor((stock[0].timestamp/1000)/60);
 		// current time converted to minutes
 		const currentTime = Math.floor((new Date().getTime()/1000)/60);
 
 		//if price data is older than 15 mins, update price data for each item in db and then finish with function below
-		if((timeOnStocks+15) < currentTime)
+		if(true && hasBeenRefreshed === true)
 		{
 			console.log("it has been 15 mins you should query for new data");
 
 			//loop through each stock and update price for each
 			stock.map((item, index) =>
 			{
+				console.log("before request");
 				let url = `http:/\/dev.markitondemand.com/MODApis/Api/v2/Quote/json?symbol=${item.symbol}`;
 
 				request.get(url, (err, response, body )=>
 				{
 					if(err) throw err;
+					console.log("after request");
 
 					//parse data from api and store current price from api in variable
 					const data = JSON.parse(body);
@@ -74,7 +78,10 @@ exportsObject.getAllStock = (req, res) =>
 					console.log("data is");
 					console.log(data);
 
-					stockItem.findByIdAndUpdate(item._id, { "dailyStockPrice": updatedPrice }, (err) =>
+					let newTimestamp = new Date().getTime();
+
+					// update price and timestamp
+					stockItem.findByIdAndUpdate(item._id, { "dailyStockPrice": updatedPrice, "timestamp": newTimestamp }, (err) =>
 					{
 						if (err) throw err;
 					});
@@ -86,7 +93,7 @@ exportsObject.getAllStock = (req, res) =>
 
 		//if price is not older, just do what is below
 		} else {
-			console.log("it has not been 15 mins, simply output data");
+			console.log("it has not been 15 mins, simply output data>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 			//respond with all stocks that match userid if no error
 			filterStocksByUserId(req, res, stock);
 		}
