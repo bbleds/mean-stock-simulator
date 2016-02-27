@@ -45,7 +45,6 @@ exportsObject.getAllStock = (req, res) =>
 	stockItem.find({}, (err, stock)=>
 	{
 		if (err) throw err;
-		const hasBeenRefreshed = false;
 
 		// time on stocks converted to minutes
 		const timeOnStocks = Math.floor((stock[0].timestamp/1000)/60);
@@ -53,16 +52,15 @@ exportsObject.getAllStock = (req, res) =>
 		const currentTime = Math.floor((new Date().getTime()/1000)/60);
 
 		//if price data is older than 15 mins, update price data for each item in db and then finish with function below
-		if(true)
+		if((timeOnStocks+15) < currentTime)
 		{
 			console.log("it has been 15 mins you should query for new data");
 
 			//loop through each stock and update price for each
 			stock.map((item, index) =>
 			{
-				console.log("before request");
-				let url = `https://finance.yahoo.com/webservice/v1/symbols/${item.symbol}/quote?format=json`;
 
+				let url = `https://finance.yahoo.com/webservice/v1/symbols/${item.symbol}/quote?format=json`;
 				request.get(url, (err, response, body )=>
 				{
 					if(err) throw err;
@@ -73,8 +71,6 @@ exportsObject.getAllStock = (req, res) =>
 
 
 					//update db with updated price
-					console.log("data is");
-					console.log(data.list.resources[0].resource.fields);
 					let updatedPrice = data.list.resources[0].resource.fields.price;
 
 					console.log("last LastPrice is "+ updatedPrice);
