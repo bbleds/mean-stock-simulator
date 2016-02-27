@@ -120,7 +120,6 @@ exportsObject.updateQuantity = (req, res) =>
 
 exportsObject.updateStockPrice = (req, res) =>
 {
-	console.log("bruhhhhhhhh");
 
 };
 
