@@ -1,15 +1,20 @@
 "use strict";
-//dependencies
+//-------------- dependencies
+// modules
 const request = require("request");
+const _ = require("lodash");
+// mongoose models
 const stockItem = require("../models/stockItem");
+const singleUser = require("../models/user");
 
-//module exports object
+//--------------- module exports object
 const exportsObject = {};
 
+// -------------- export methods
 exportsObject.getAllStock = (req, res) =>
 {
 	//query db for all stocks items
-	stockItem.find({}, (err,stock)=>
+	stockItem.find({}, (err, stock)=>
 	{
 		if (err) throw err;
 		// time on stocks converted to minutes
@@ -17,18 +22,23 @@ exportsObject.getAllStock = (req, res) =>
 		// current time converted to minutes
 		const currentTime = Math.floor((new Date().getTime()/1000)/60);
 
+		// array that server will send to client as client-selected stocks
+		const filteredStockArray = [];
+
 		//if price data is older than 15 mins, update price data for each item in db and then finish with function below
-		if((timeOnStocks+15) < currentTime){
+		if((timeOnStocks+15) < currentTime)
+		{
 			console.log("it has been 15 mins you should query for new data");
 
 			//loop through each stock and update price for each
-			console.log(stock);
 			stock.map((item, index) =>
 			{
 				let url = `http:/\/dev.markitondemand.com/MODApis/Api/v2/Quote/json?symbol=${item.symbol}`;
 
 				request.get(url, (err, response, body )=>
 				{
+					if(err) throw err;
+
 					//parse data from api and store current price from api in variable
 					const data = JSON.parse(body);
 					let updatedPrice = data.LastPrice;
@@ -46,13 +56,49 @@ exportsObject.getAllStock = (req, res) =>
 				});
 			});
 
+			//respond with all stocks that match userid if no error
+			singleUser.findById(req.session.passport.user, (err, userfound) =>
+			{
+				if (err) throw err;
+
+				// filter stocks by the ids found on the user's stocks
+				userfound.stocks.map((item, index) =>
+				{
+					_.filter(stock, (stockItem) =>
+					{
+						// if itme id matches stock item id push into filteredresobject
+						if(item.stockId.toString() === stockItem._id.toString()){
+							filteredStockArray.push(stockItem);
+						}
+					});
+				});
+					res.json(filteredStockArray);
+			});
+
 		//if price is not older, just do what is below
 		} else {
 			console.log("it has not been 15 mins, simply output data");
-		}
+			// due to async operation, do the following code
 
-		//respond with all stocks if no error
-		res.json(stock);
+			//respond with all stocks that match userid if no error
+			singleUser.findById(req.session.passport.user, (err, userfound) =>
+			{
+				if (err) throw err;
+
+				// filter stocks by the ids found on the user's stocks
+				userfound.stocks.map((item, index) =>
+				{
+					_.filter(stock, (stockItem) =>
+					{
+						// if itme id matches stock item id push into filteredresobject
+						if(item.stockId.toString() === stockItem._id.toString()){
+							filteredStockArray.push(stockItem);
+						}
+					});
+				});
+					res.json(filteredStockArray);
+			});
+		}
 	});
 
 };

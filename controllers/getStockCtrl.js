@@ -29,16 +29,33 @@ exportsObject.getStock = (req, res) =>
 	// save stock to db and send res
 	stockToBuy.save(function (err, objectGiven) {
    			 if (err) return console.error(err);
-				 console.log("Object given is");
-				 	console.log(objectGiven._id);
+
+				 let stockExists = false;
+
 					// 	save stock selected to the logged in user
-						// get current user object, and update stocks key
-						  console.log("User's key is >>>>>>>>>>>>>>>>");
-							console.log(req.session.passport.user);
-							singleUser.findByIdAndUpdate(req.session.passport.user, {$push: {"stocks": objectGiven._id}}, (err, result) =>
+						//if stock already exists, send message that it already exists
+							singleUser.findById(req.session.passport.user, (err, foundUser) =>
 							{
 								if (err) throw err;
-								res.send({"status":"Purchased Stock Successfully"});
+									// check and see if smybol of stock already exists in user's "stocks" key
+										foundUser.stocks.map((item, index) =>
+										{
+											item.symbol === objectGiven.symbol ? stockExists = true : console.log("it is a new stock");
+										});
+
+										if(!stockExists)
+										{
+											//else  get current user object, and update stocks key
+												singleUser.findByIdAndUpdate(req.session.passport.user, {$push: {"stocks": { "symbol" : objectGiven.symbol, "stockId" :objectGiven._id}}}, (err, result) =>
+												{
+													if (err) throw err;
+													res.send({"status":"Purchased Stock Successfully"});
+												});
+										} else
+										{
+													res.send({"status":"You have already purchased this stock, check out your portfolio to buy more!"});
+										}
+
 							});
 
  		 });
