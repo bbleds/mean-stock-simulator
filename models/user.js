@@ -8,7 +8,8 @@ const BCRYPT_DIFFICULTY = 10;
 const UserSchema = mongoose.Schema({
 	email: String,
   password: String,
-	username: String
+	username: String,
+	stocks: []
 });
 
 UserSchema.methods.confirmAuth = function (password, cb) {

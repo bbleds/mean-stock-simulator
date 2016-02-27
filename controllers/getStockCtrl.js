@@ -1,7 +1,10 @@
 "use strict";
+// this controllers servers to save stocks to the db, and add stock ids to the logged in user's "stocks" key
+
 //dependencies
 const request = require("request");
 const stockItem = require("../models/stockItem");
+const singleUser = require("../models/user");
 
 //module exports object
 const exportsObject = {};
@@ -26,7 +29,18 @@ exportsObject.getStock = (req, res) =>
 	// save stock to db and send res
 	stockToBuy.save(function (err, objectGiven) {
    			 if (err) return console.error(err);
-   			 res.send({"status":"Purchased Stock Successfully"});
+				 console.log("Object given is");
+				 	console.log(objectGiven._id);
+					// 	save stock selected to the logged in user
+						// get current user object, and update stocks key
+						  console.log("User's key is >>>>>>>>>>>>>>>>");
+							console.log(req.session.passport.user);
+							singleUser.findByIdAndUpdate(req.session.passport.user, {$push: {"stocks": objectGiven._id}}, (err, result) =>
+							{
+								if (err) throw err;
+								res.send({"status":"Purchased Stock Successfully"});
+							});
+
  		 });
 
 };
