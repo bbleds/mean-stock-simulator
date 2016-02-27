@@ -53,7 +53,7 @@ exportsObject.getAllStock = (req, res) =>
 		const currentTime = Math.floor((new Date().getTime()/1000)/60);
 
 		//if price data is older than 15 mins, update price data for each item in db and then finish with function below
-		if(true && hasBeenRefreshed === true)
+		if(true)
 		{
 			console.log("it has been 15 mins you should query for new data");
 
@@ -61,23 +61,23 @@ exportsObject.getAllStock = (req, res) =>
 			stock.map((item, index) =>
 			{
 				console.log("before request");
-				let url = `http:/\/dev.markitondemand.com/MODApis/Api/v2/Quote/json?symbol=${item.symbol}`;
+				let url = `https://finance.yahoo.com/webservice/v1/symbols/${item.symbol}/quote?format=json`;
 
 				request.get(url, (err, response, body )=>
 				{
 					if(err) throw err;
-					console.log("after request");
+
 
 					//parse data from api and store current price from api in variable
 					const data = JSON.parse(body);
-					let updatedPrice = data.LastPrice;
 
-					console.log("last LastPrice is "+ updatedPrice);
 
 					//update db with updated price
 					console.log("data is");
-					console.log(data);
+					console.log(data.list.resources[0].resource.fields);
+					let updatedPrice = data.list.resources[0].resource.fields.price;
 
+					console.log("last LastPrice is "+ updatedPrice);
 					let newTimestamp = new Date().getTime();
 
 					// update price and timestamp
