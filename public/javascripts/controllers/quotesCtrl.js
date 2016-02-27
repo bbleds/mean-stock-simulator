@@ -12,8 +12,7 @@ app.controller("quotesCtrl", ["$http", "$state",  function($http, $state)
 		$http.get(`/api/quotes/${sym}`)
 		.then((data)=>
 		{
-			console.log("data is ");
-			console.log(data);
+			// if there was an error with the request(symbol not found), display error message, else display data
 			data.data.error ? self.quoteError = true : (self.stockInfo = data, self.quoteFound = true, self.quoteError = false);
 		});
 	};
