@@ -23,6 +23,9 @@
 				<h1>{{quotes.getStockSuccess.data.status}}</h1>
 			</div>
 		</div>
+		<div id="errorMessage" ng-show="quotes.quoteError">
+			<h1>Couldn't find a quote matching that symbol, please try again!</h1>
+		</div>
 
 		<!-- Buy Modal -->
 		<div id="buyModal" class="modal fade" role="dialog">

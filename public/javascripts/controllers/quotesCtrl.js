@@ -3,6 +3,7 @@ app.controller("quotesCtrl", ["$http", "$state",  function($http, $state)
 {
 	const self = this;
 	self.quoteFound = false;
+	self.quoteError = false;
 
 	//gets quote for a stock
 	self.getQuote = (sym) =>
@@ -13,7 +14,7 @@ app.controller("quotesCtrl", ["$http", "$state",  function($http, $state)
 		{
 			console.log("data is ");
 			console.log(data);
-			data.status === 200 ? (self.stockInfo = data, self.quoteFound = true) : console.log("not found");
+			data.data.error ? self.quoteError = true : (self.stockInfo = data, self.quoteFound = true, self.quoteError = false);
 		});
 	};
 
