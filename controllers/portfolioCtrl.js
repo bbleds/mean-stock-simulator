@@ -10,6 +10,34 @@ const singleUser = require("../models/user");
 //--------------- module exports object
 const exportsObject = {};
 
+// -------------- private functions
+//respond with all stocks that match userid if no error
+const filterStocksByUserId = (req, res, stock) =>
+{
+	// array that server will send to client as client-selected stocks
+	const filteredStockArray = [];
+
+	singleUser.findById(req.session.passport.user, (err, userfound) =>
+	{
+		if (err) throw err;
+
+		// filter stocks by the ids found on the user's stocks
+		userfound.stocks.map((item, index) =>
+		{
+			_.filter(stock, (stockItem) =>
+			{
+				// if itme id matches stock item id push into filteredresobject
+				if(item.stockId.toString() === stockItem._id.toString()){
+					filteredStockArray.push(stockItem);
+				}
+			});
+		});
+			res.json(filteredStockArray);
+	});
+};
+
+
+
 // -------------- export methods
 exportsObject.getAllStock = (req, res) =>
 {
@@ -21,9 +49,6 @@ exportsObject.getAllStock = (req, res) =>
 		const timeOnStocks = Math.floor((stock[0].timestamp/1000)/60);
 		// current time converted to minutes
 		const currentTime = Math.floor((new Date().getTime()/1000)/60);
-
-		// array that server will send to client as client-selected stocks
-		const filteredStockArray = [];
 
 		//if price data is older than 15 mins, update price data for each item in db and then finish with function below
 		if((timeOnStocks+15) < currentTime)
@@ -57,47 +82,13 @@ exportsObject.getAllStock = (req, res) =>
 			});
 
 			//respond with all stocks that match userid if no error
-			singleUser.findById(req.session.passport.user, (err, userfound) =>
-			{
-				if (err) throw err;
-
-				// filter stocks by the ids found on the user's stocks
-				userfound.stocks.map((item, index) =>
-				{
-					_.filter(stock, (stockItem) =>
-					{
-						// if itme id matches stock item id push into filteredresobject
-						if(item.stockId.toString() === stockItem._id.toString()){
-							filteredStockArray.push(stockItem);
-						}
-					});
-				});
-					res.json(filteredStockArray);
-			});
+			filterStocksByUserId(req, res, stock);
 
 		//if price is not older, just do what is below
 		} else {
 			console.log("it has not been 15 mins, simply output data");
-			// due to async operation, do the following code
-
 			//respond with all stocks that match userid if no error
-			singleUser.findById(req.session.passport.user, (err, userfound) =>
-			{
-				if (err) throw err;
-
-				// filter stocks by the ids found on the user's stocks
-				userfound.stocks.map((item, index) =>
-				{
-					_.filter(stock, (stockItem) =>
-					{
-						// if itme id matches stock item id push into filteredresobject
-						if(item.stockId.toString() === stockItem._id.toString()){
-							filteredStockArray.push(stockItem);
-						}
-					});
-				});
-					res.json(filteredStockArray);
-			});
+			filterStocksByUserId(req, res, stock);
 		}
 	});
 
