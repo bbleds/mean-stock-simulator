@@ -68,7 +68,7 @@ exportsObject.getStock = (req, res) =>
 			const company = req.params.company;
 			const quantity = req.params.quantity;
 			const purchaseStockPrice = req.params.purchaseStockPrice;
-			const symbol = req.params.symbol.toLowerCase();
+			const symbol = req.params.symbol.toUpperCase();
 
 			// new instance of stock object
 			const stockToBuy = new stockItem(

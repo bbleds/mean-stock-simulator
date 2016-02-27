@@ -11,6 +11,8 @@ app.controller("quotesCtrl", ["$http", "$state",  function($http, $state)
 		$http.get(`/api/quotes/${sym}`)
 		.then((data)=>
 		{
+			console.log("data is ");
+			console.log(data);
 			data.status === 200 ? (self.stockInfo = data, self.quoteFound = true) : console.log("not found");
 		});
 	};
