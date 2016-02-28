@@ -31,7 +31,7 @@ const saveStockToUser = (req, res, objectGiven) =>
 		if(!stockExists)
 		{
 			//else  get current user object, and update stocks key
-			singleUser.findByIdAndUpdate(req.session.passport.user, {$push: {"stocks": { "symbol" : objectGiven.symbol, "stockId" :objectGiven._id}}}, (err, result) =>
+			singleUser.findByIdAndUpdate(req.session.passport.user, {$push: {"stocks": { "symbol" : objectGiven.symbol, "stockId" :objectGiven._id, "quantity" : req.params.quantity}}}, (err, result) =>
 			{
 				if (err) throw err;
 				res.send({"status":"Purchased Stock Successfully"});

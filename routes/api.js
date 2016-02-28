@@ -20,10 +20,8 @@ router.get('/api/userdata', (req, res) =>
 // ---------- Portfolio routes
 //queries db and sends back data as json to /api/portfolio route
 router.get("/api/portfolio", portfolioCtrl.getAllStock);
-//updates db with new quantity after stocks are sold
+//updates db with new quantity after stocks are bought or sold
 router.put("/api/portfolio/:qty/:stockId/:operation", portfolioCtrl.updateQuantity);
-//refresh db with updated prices
-router.put("/api/portfolio/:qty/:stockId/:operation", portfolioCtrl.updateStockPrice);
 
 
 // --------  Get Quote Route

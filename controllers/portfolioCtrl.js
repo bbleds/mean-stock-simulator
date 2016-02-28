@@ -26,8 +26,11 @@ const filterStocksByUserId = (req, res, stock) =>
 		{
 			_.filter(stock, (stockItem) =>
 			{
-				// if itme id matches stock item id push into filteredresobject
+				// if item id matches stock item id push into filteredresobject
 				if(item.stockId.toString() === stockItem._id.toString()){
+					// set the quanitity of the stock to be the quanitity specified in the user's stocks key
+					stockItem.quantity = item.quantity;
+					// push filtered stock into array to be given to client
 					filteredStockArray.push(stockItem);
 				}
 			});
@@ -97,6 +100,7 @@ exportsObject.getAllStock = (req, res) =>
 
 };
 
+// updates quantity and cash for user
 exportsObject.updateQuantity = (req, res) =>
 {
 	console.log(req.params);
@@ -107,7 +111,19 @@ exportsObject.updateQuantity = (req, res) =>
 		const conditions = {"_id": req.params.stockId};
 		//the operation to be executed on the matched stock, in this case it is a subtraction operation (increment by negative quantity passed in) or addition operation
 		let update;
-		req.params.operation === "buy" ? update = {$inc: {"quantity" : +req.params.qty}} : update = {$inc: {"quantity" : -req.params.qty}};
+		// req.params.operation === "buy" ? update = {$inc: {"quantity" : +req.params.qty}} : update = {$inc: {"quantity" : -req.params.qty}};
+		// if operation is buy, update cash and quantity amounts
+		if(req.params.operation === "buy")
+		{
+			update = {$inc: {"quantity" : +req.params.qty}};
+
+		//else if operation is sell, update cash and quantity amounts
+		}
+		else
+		{
+			update = {$inc: {"quantity" : -req.params.qty}};
+		}
+
 		//only target one item in db
 		const options = {"multi": false};
 
@@ -119,11 +135,6 @@ exportsObject.updateQuantity = (req, res) =>
 		res.send({"status":"success", "stocksChanged": numStocksChanged});
 
 	});
-};
-
-exportsObject.updateStockPrice = (req, res) =>
-{
-
 };
 
 module.exports = exportsObject;
