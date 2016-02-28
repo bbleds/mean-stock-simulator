@@ -108,32 +108,50 @@ exportsObject.updateQuantity = (req, res) =>
 
 	//variables to query db
 		//the conditions to be matched to select stock to update
-		const conditions = {"_id": req.params.stockId};
+		// const conditions = {"_id": req.params.stockId};
+		const conditions = {
+			"_id": req.session.passport.user,
+			"stocks.stockId": req.params.stockId
+		};
 		//the operation to be executed on the matched stock, in this case it is a subtraction operation (increment by negative quantity passed in) or addition operation
 		let update;
 		// req.params.operation === "buy" ? update = {$inc: {"quantity" : +req.params.qty}} : update = {$inc: {"quantity" : -req.params.qty}};
 		// if operation is buy, update cash and quantity amounts
 		if(req.params.operation === "buy")
 		{
-			update = {$inc: {"quantity" : +req.params.qty}};
+			update = {$inc: {"stocks.$.quantity" : +req.params.qty}};
 
 		//else if operation is sell, update cash and quantity amounts
 		}
 		else
 		{
-			update = {$inc: {"quantity" : -req.params.qty}};
+			update = {$inc: {"stocks.$.quantity" : -req.params.qty}};
 		}
 
 		//only target one item in db
 		const options = {"multi": false};
 
 	//update db for sold stocks
-	stockItem.update(conditions, update, options, (err, numStocksChanged) => {
+	// stockItem.update(conditions, update, options, (err, numStocksChanged) => {
+	// 	if(err) throw err;
+	//
+	// 	//send success message to client if data was updated
+	// 	res.send({"status":"success", "stocksChanged": numStocksChanged});
+	//
+	// });
+	singleUser.update({
+		_id: `ObjectId(${req.session.passport.user})`,
+		"stocks.stockId": `ObjectId(${req.params.stockId})`
+	},
+	update, options, (err, numStocksChanged) =>
+	{
 		if(err) throw err;
 
-		//send success message to client if data was updated
-		res.send({"status":"success", "stocksChanged": numStocksChanged});
+		console.log("you changed some stuff>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		console.log(numStocksChanged);
 
+		//send success message to client if data was updated
+			res.send({"status":"success", "stocksChanged": numStocksChanged});
 	});
 };
 
