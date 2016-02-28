@@ -44,23 +44,45 @@ const saveStockToUser = (req, res, objectGiven) =>
 	});
 };
 
+// when user buys stock, remove price of stock from user's available cash, if amount remaining is greater than 0, then complete transaction
+const checkCashAmount = (req, res, total, objectGiven) =>
+{
+		singleUser.findById(req.session.passport.user, (err, foundUser) =>
+		{
+			if(err) throw err;
+			const currentCash = foundUser;
+			console.log("current Cash amount is ");
+			console.log(foundUser.cash);
+			// if users cash remaining will be greater than zero, save
+			if(parseInt(foundUser.cash) - parseInt(total) >= 0){
+				// update cash
+
+				// add stock to user's stocks key
+				saveStockToUser(req, res, objectGiven);
+
+			// if no money is left
+			} else {
+					res.send({"status":"You dont have enough cash to complete the purchase!"});
+			}
+
+		});
+};
+
 
 // ------------ export methods
 exportsObject.getStock = (req, res) =>
 {
 	// if stock does not exist in db, add it to stock items, but if it exists just add the object id to the user
-	stockItem.find({"symbol": req.params.symbol.toLowerCase()}, (err, itemFound) =>
+	stockItem.find({"symbol": req.params.symbol.toUpperCase()}, (err, itemFound) =>
 	{
 		if (err) throw err;
-		console.log("Item found is >>>>>>>>>>>>>>>>>>>>");
-		console.log(itemFound);
-		console.log("item found .length is ");
-		console.log(itemFound.length);
 
 		// if item exists in database
 		if(itemFound.length === 1){
 
-			saveStockToUser(req, res, itemFound[0]);
+			const total = (parseInt(req.params.quantity) * parseInt(req.params.purchaseStockPrice));
+			checkCashAmount(req, res, total, itemFound[0]);
+
 
 		// if item is not in database
 		} else {
@@ -84,7 +106,8 @@ exportsObject.getStock = (req, res) =>
 				stockToBuy.save(function (err, objectGiven) {
 					if (err) return console.error(err);
 
-						saveStockToUser(req, res, objectGiven);
+					const total = (parseInt(req.params.quantity) * parseInt(req.params.purchaseStockPrice));
+					checkCashAmount(req, res, total, objectGiven);
 
 				});
 

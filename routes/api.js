@@ -13,7 +13,7 @@ router.get('/api/userdata', (req, res) =>
   UserModel.findOne({"_id": req.session.passport.user}, (err, userFound) =>
   {
     if (err) throw err;
-      res.json({userId: req.session.passport.user, username: userFound.username});
+      res.json({userId: req.session.passport.user, username: userFound.username, cashAvailable: userFound.cash});
   });
 });
 
@@ -31,5 +31,11 @@ router.get("/api/quotes/:symbol", getQuoteCtrl.getQuoteBySymbol);
 
 // ---------- Save Quote Route
 router.post("/api/getStock/:company/:quantity/:purchaseStockPrice/:symbol", getStockCtrl.getStock);
+
+// ---------- Cash interaction Routes
+router.get("/api/cash", (req, res) =>
+{
+  res.send({"hello": "world"})
+});
 
 module.exports = router;

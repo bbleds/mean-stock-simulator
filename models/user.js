@@ -9,7 +9,8 @@ const UserSchema = mongoose.Schema({
 	email: String,
   password: String,
 	username: String,
-	stocks: []
+	stocks: [],
+	cash: Number
 });
 
 UserSchema.methods.confirmAuth = function (password, cb) {

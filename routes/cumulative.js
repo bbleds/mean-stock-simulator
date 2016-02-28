@@ -50,7 +50,8 @@ router.post('/register', (req, res) =>
   const user = new UserModel({
     email: req.body.email,
     password: req.body.password,
-    username: req.body.username
+    username: req.body.username,
+    cash: 5000
   });
 
   user.save((err, userObject) =>
