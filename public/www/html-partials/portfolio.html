@@ -24,7 +24,7 @@
 					<p>{{stock.symbol}}</p>
 				</div>
 				<div class="col-md-2 singleStockRow">
-					<p>${{stock.dailyStockPrice}}</p>
+					<p>${{stock.dailyStockPrice | number:2}}</p>
 				</div>
 				<div class="col-md-2 singleStockRow">
 					<p>{{stock.quantity}}</p>
@@ -38,7 +38,7 @@
 		<!-- Total portfolio value output -->
 		<div class="row">
 			<div class="col-md-12 centeredText">
-				<h2>Current Portfolio Value:  ${{portfolio.totalPortfolioValue.toFixed(2) | number}} </h2>
+				<h2>Current Portfolio Value:  ${{portfolio.totalPortfolioValue | number:2}} </h2>
 			</div>
 		</div>
 

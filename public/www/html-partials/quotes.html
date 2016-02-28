@@ -15,7 +15,7 @@
 			<div class="col-md-12">
 				<h2>Quote Found</h2>
 				<h3>Company: {{quotes.stockInfo.data.list.resources[0].resource.fields.name}}</h3>
-				<h3>Current Price: ${{quotes.stockInfo.data.list.resources[0].resource.fields.price | number}}</h3>
+				<h3>Current Price: ${{quotes.stockInfo.data.list.resources[0].resource.fields.price | number:2}}</h3>
 				<!-- trigger buy modal -->
 				<button class="btn btn-info btn-md generalBtn" data-toggle="modal" data-target="#buyModal">Buy</button>
 			</div>

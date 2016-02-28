@@ -50,19 +50,21 @@ const checkCashAmount = (req, res, total, objectGiven) =>
 		singleUser.findById(req.session.passport.user, (err, foundUser) =>
 		{
 			if(err) throw err;
-			const currentCash = foundUser;
-			console.log("current Cash amount is ");
-			console.log(foundUser.cash);
 			// if users cash remaining will be greater than zero, save
 			if(parseInt(foundUser.cash) - parseInt(total) >= 0){
 				// update cash
+				const cashAfterPurchase = (parseInt(foundUser.cash) - parseInt(total));
+				singleUser.findByIdAndUpdate(req.session.passport.user, {cash: cashAfterPurchase}, (err, doc) =>
+				{
+					if(err) throw err;
+					// add stock to user's stocks key
+					saveStockToUser(req, res, objectGiven);
+				});
 
-				// add stock to user's stocks key
-				saveStockToUser(req, res, objectGiven);
 
 			// if no money is left
 			} else {
-					res.send({"status":"You dont have enough cash to complete the purchase!"});
+					res.send({"status":"You don't have enough cash to complete the purchase!"});
 			}
 
 		});
@@ -72,6 +74,12 @@ const checkCashAmount = (req, res, total, objectGiven) =>
 // ------------ export methods
 exportsObject.getStock = (req, res) =>
 {
+	// allow user to only buy stock in blocks of 100
+	if(parseInt(req.params.quantity) > 100){
+		res.send({"status": "You can't buy more than 100 shares at a time!"});
+		return;
+	}
+
 	// if stock does not exist in db, add it to stock items, but if it exists just add the object id to the user
 	stockItem.find({"symbol": req.params.symbol.toUpperCase()}, (err, itemFound) =>
 	{
