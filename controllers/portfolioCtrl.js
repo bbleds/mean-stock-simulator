@@ -137,6 +137,7 @@ exportsObject.updateQuantity = (req, res) =>
 
 	//update db for sold stocks
 	// db.users.update({_id: ObjectId("56d25ca3b65e6845e5a737f1"),"stocks.stockId":ObjectId("56d2573022494da0e34e5407")}, {$inc: {"stocks.$.quantity" : +3}})
+
 	// singleUser.update({
 	// 	"_id": `ObjectId(${req.session.passport.user})`,
 	// 	"stocks.stockId": `ObjectId(${req.params.stockId})`
@@ -160,12 +161,13 @@ exportsObject.updateQuantity = (req, res) =>
 	MongoClient.connect(url, function(err, db) {
 		if(err) throw err;
 			db.collection('users').update(
-				{ _id: ObjectId("56d25ca3b65e6845e5a737f1"),"stocks.stockId":ObjectId("56d2573022494da0e34e5407")},
+				{ _id: ObjectId(`${req.session.passport.user}`),"stocks.stockId":ObjectId(`${req.params.stockId}`)},
 				update,
 				function(err, results)
 				{
 					console.log("finished");
 					console.log(results);
+					db.close();
 				});
 
 
