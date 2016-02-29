@@ -3,6 +3,12 @@
 // modules
 const request = require("request");
 const _ = require("lodash");
+
+			// mongo tests
+			var MongoClient = require('mongodb').MongoClient;
+			var ObjectId = require('mongodb').ObjectID;
+			var url = 'mongodb://localhost:27017/stockSimulator';
+
 // mongoose models
 const stockItem = require("../models/stockItem");
 const singleUser = require("../models/user");
@@ -109,10 +115,6 @@ exportsObject.updateQuantity = (req, res) =>
 	//variables to query db
 		//the conditions to be matched to select stock to update
 		// const conditions = {"_id": req.params.stockId};
-		const conditions = {
-			_id: `${req.session.passport.user}`,
-			"stocks.stockId": `${req.params.stockId}`
-		};
 		//the operation to be executed on the matched stock, in this case it is a subtraction operation (increment by negative quantity passed in) or addition operation
 		let update;
 		// req.params.operation === "buy" ? update = {$inc: {"quantity" : +req.params.qty}} : update = {$inc: {"quantity" : -req.params.qty}};
@@ -139,18 +141,40 @@ exportsObject.updateQuantity = (req, res) =>
 	// 	"_id": `ObjectId(${req.session.passport.user})`,
 	// 	"stocks.stockId": `ObjectId(${req.params.stockId})`
 	// },
-	console.log("update is");
-	console.log(update);
-	singleUser.update(conditions, update, options, (err, numStocksChanged) =>
-	{
+	// console.log("update is");
+	// console.log(update);
+	// singleUser.update(conditions, update, options, (err, numStocksChanged) =>
+	// {
+	// 	if(err) throw err;
+	//
+	// 	console.log("you changed some stuff>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+	// 	console.log(numStocksChanged);
+	//
+	// 	//send success message to client if data was updated
+	// 		res.send({"status":"success", "stocksChanged": numStocksChanged});
+	// });
+
+
+
+	// neeeeeeeeeeeeeeeeeeeeeeeeew mongo
+	MongoClient.connect(url, function(err, db) {
 		if(err) throw err;
+			db.collection('users').update(
+				{ _id: ObjectId("56d25ca3b65e6845e5a737f1"),"stocks.stockId":ObjectId("56d2573022494da0e34e5407")},
+				update,
+				function(err, results)
+				{
+					console.log("finished");
+					console.log(results);
+				});
 
-		console.log("you changed some stuff>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		console.log(numStocksChanged);
 
-		//send success message to client if data was updated
-			res.send({"status":"success", "stocksChanged": numStocksChanged});
-	});
+});
+
+
+
+
+
 };
 
 module.exports = exportsObject;

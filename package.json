@@ -27,6 +27,7 @@
     "express-session": "^1.13.0",
     "jade": "^1.11.0",
     "lodash": "^4.5.1",
+    "mongodb": "^2.1.7",
     "mongoose": "^4.4.4",
     "node-sass-middleware": "^0.9.7",
     "passport": "^0.3.2",
